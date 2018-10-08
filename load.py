@@ -9,7 +9,7 @@ SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
 # The ID and range of a sample spreadsheet.
 TRACKS_SPREADSHEET_ID = '1cPp9nfSG5WlJyTK5Avnvh8NqJbQCFNXl6A652sKKrSw'
 TRACKS_RANGE_NAME = 'Calendar!B5:I20'
-DRIVERS_RANGE_NAME='Drivers!B6:AQ45'
+DRIVERS_RANGE_NAME= 'Drivers!B6:D45'
 
 def load():
     """Shows basic usage of the Sheets API.
@@ -23,13 +23,22 @@ def load():
     service = build('sheets', 'v4', http=creds.authorize(Http()))
 
     tracks_result=service.spreadsheets().values().get(spreadsheetId=TRACKS_SPREADSHEET_ID,range=TRACKS_RANGE_NAME).execute()
-    values =tracks_result.get('values',[])
+    track_values =tracks_result.get('values',[])
 
-    if not values:
+    drivers_result=service.spreadsheets().values().get(spreadsheetId=TRACKS_SPREADSHEET_ID,range=DRIVERS_RANGE_NAME).execute()
+    drivers_values =drivers_result.get('values',[])
+
+    if not track_values:
         print('No data found.')
     else:
-        for row in values:
+        for row in track_values:
             print('%s,%s,%s,%s,%s,%s,%s,%s' %(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7]))
+    if not drivers_values:
+        print('No drivers found.')
+    else:
+        for row in drivers_values:
+            print('%s,%s,%s'%(row[0],row[1],row[2]))
+    return (drivers_values,track_values)
     
-load()
+
     
